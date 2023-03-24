@@ -8,7 +8,7 @@ export default function ObjectTableFilter({
 	handleQuery,
 	filter,
 	handleFilter,
-	fetchFilteredData,
+	setFilterDataToInput,
 }: IObjectTableFilter) {
 	const availableProperties =
 		objectProperties[object as keyof typeof objectProperties].split(",");
@@ -16,10 +16,10 @@ export default function ObjectTableFilter({
 	const [filterTypeToggle, setFilterTypeToggle] = useState(true);
 
 	useEffect(() => {
+		handleQuery("");
 		handleFilter({
 			type: filterActionKind.RESET_STATE,
 		});
-		handleQuery("");
 	}, [filterTypeToggle, handleQuery, handleFilter]);
 
 	return (
@@ -101,7 +101,7 @@ export default function ObjectTableFilter({
 			)}
 			<button
 				className="bg-transparent hover:bg-grey-500 text-grey-700 font-semibold py-2 px-4 border border-black-500 rounded"
-				onClick={() => fetchFilteredData()}
+				onClick={() => setFilterDataToInput()}
 			>
 				Filter objects
 			</button>

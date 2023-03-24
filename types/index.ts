@@ -11,7 +11,7 @@ export interface IObjectTableFilter {
 	handleQuery: Function;
 	filter: Filter;
 	handleFilter: Function;
-	fetchFilteredData: Function;
+	setFilterDataToInput: Function;
 }
 
 export enum filterActionKind {

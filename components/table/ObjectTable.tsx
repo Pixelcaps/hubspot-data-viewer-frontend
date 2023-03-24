@@ -1,59 +1,26 @@
 import useHubspot from "@/hooks/useHubspot";
-import {
-	Filter,
-	FilterAction,
-	filterActionKind,
-	IObjectTableProps,
-} from "@/types";
+import { Filter, filterActionKind, IObjectTableProps } from "@/types";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import { useQuery } from "react-query";
 import { useTable, usePagination, Column } from "react-table";
 import LoadingSpinner from "../shared/LoadingSpinner";
 import ObjectTableFilter from "./ObjectTableFilter";
-import { objectProperties } from "./utils";
-
-const initialFilterState = { propertyName: "", operator: "", value: "" };
-
-const filterReducer = (state: Filter, action: FilterAction) => {
-	const { type, payload } = action;
-	switch (type) {
-		case filterActionKind.CHANGE_PROPERTY:
-			return {
-				...state,
-				propertyName: payload,
-			};
-		case filterActionKind.CHANGE_OPERATOR:
-			return {
-				...state,
-				operator: payload,
-			};
-		case filterActionKind.CHANGE_VALUE:
-			return {
-				...state,
-				value: payload,
-			};
-		case filterActionKind.DELETE_VALUE:
-			return { ...state, value: undefined };
-		case filterActionKind.RESET_STATE:
-			return initialFilterState;
-		default:
-			return state;
-	}
-};
+import { filterReducer, initialFilterState, objectProperties } from "./utils";
 
 export default function ObjectTable({ object, headers }: IObjectTableProps) {
 	const { getObjects, filterObjects } = useHubspot();
 
 	const [queryPageIndex, setQueryPageIndex] = useState(0);
 	const [queryPageSize, setQueryPageSize] = useState(10);
-	const [filterObjectsTotalCount, setFilterObjectsTotalCount] = useState(0);
-	const [queryInput, setQueryInput] = useState("");
 	const [afterId, setAfterId] = useState(undefined);
 
-	const [filterInput, dispatch] = useReducer(
+	const [queryInput, setQueryInput] = useState("");
+	const [filterInput, setFilterInput] = useReducer(
 		filterReducer,
 		initialFilterState
 	);
+
+	const [filterObjectsTotalCount, setFilterObjectsTotalCount] = useState(0);
 
 	const [queryData, setQueryData] = useState("");
 	const [filterData, setFilterData] = useReducer(
@@ -121,7 +88,7 @@ export default function ObjectTable({ object, headers }: IObjectTableProps) {
 		}
 	};
 
-	const fetchFilteredData = () => {
+	const setFilterDataToInput = () => {
 		gotoPage(0);
 		if (queryInput) {
 			setQueryData(queryInput);
@@ -205,7 +172,6 @@ export default function ObjectTable({ object, headers }: IObjectTableProps) {
 			gotoPage(0);
 			setFilterObjectsTotalCount(0);
 		}
-		console.log(filterInput);
 	}, [filterInput, gotoPage]);
 
 	if (error) {
@@ -226,8 +192,8 @@ export default function ObjectTable({ object, headers }: IObjectTableProps) {
 				query={queryInput}
 				handleQuery={setQueryInput}
 				filter={filterInput}
-				handleFilter={dispatch}
-				fetchFilteredData={fetchFilteredData}
+				handleFilter={setFilterInput}
+				setFilterDataToInput={setFilterDataToInput}
 			></ObjectTableFilter>
 			{isLoading ? (
 				<LoadingSpinner />
