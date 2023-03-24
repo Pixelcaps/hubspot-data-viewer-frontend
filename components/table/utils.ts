@@ -1,3 +1,5 @@
+import { Filter, FilterAction, filterActionKind } from "@/types";
+
 export const objectColumns = {
 	companies: [
 		{
@@ -74,3 +76,32 @@ export const hubspotFilterOperators = [
 	"CONTAINS_TOKEN",
 	"NOT_CONTAINS_TOKEN",
 ];
+
+export const initialFilterState = { propertyName: "", operator: "", value: "" };
+
+export const filterReducer = (state: Filter, action: FilterAction) => {
+	const { type, payload } = action;
+	switch (type) {
+		case filterActionKind.CHANGE_PROPERTY:
+			return {
+				...state,
+				propertyName: payload,
+			};
+		case filterActionKind.CHANGE_OPERATOR:
+			return {
+				...state,
+				operator: payload,
+			};
+		case filterActionKind.CHANGE_VALUE:
+			return {
+				...state,
+				value: payload,
+			};
+		case filterActionKind.DELETE_VALUE:
+			return { ...state, value: undefined };
+		case filterActionKind.RESET_STATE:
+			return initialFilterState;
+		default:
+			return state;
+	}
+};
